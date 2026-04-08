@@ -4,13 +4,12 @@ MediaOps-CRM-Env — Baseline Inference Script
 Runs an LLM agent against all 3 tasks and emits structured logs
 in the mandatory [START] / [STEP] / [END] format required by the hackathon.
 
-Environment variables required:
-    API_BASE_URL   — OpenAI-compatible API endpoint
-    MODEL_NAME     — Model identifier (e.g. "gpt-4o-mini")
-    HF_TOKEN       — Hugging Face token (also used as API key if OPENAI_API_KEY not set)
-    OPENAI_API_KEY — (optional) override API key
-    IMAGE_NAME     — Docker image name (optional; if set, spins up container)
-    HF_SPACE_URL   — HF Space URL to connect to (optional fallback)
+Environment variables:
+    API_BASE_URL   — OpenAI-compatible API endpoint  (default: https://api.openai.com/v1)
+    MODEL_NAME     — Model identifier                 (default: gpt-4o-mini)
+    HF_TOKEN       — HF / API key for LLM calls      (NO default — must be set)
+    IMAGE_NAME     — Docker image (optional; used with from_docker_image())
+    HF_SPACE_URL   — Running Space URL                (default: https://sanketskg-mediaops-crm-env.hf.space)
 """
 
 from __future__ import annotations
@@ -26,11 +25,11 @@ from openai import OpenAI
 
 # ─── Config ───────────────────────────────────────────────────────────────────
 
-API_BASE_URL: str = os.environ.get("API_BASE_URL", "https://api.openai.com/v1")
-MODEL_NAME: str = os.environ.get("MODEL_NAME", "gpt-4o-mini")
-API_KEY: str = os.environ.get("OPENAI_API_KEY") or os.environ.get("HF_TOKEN", "")
-IMAGE_NAME: str = os.environ.get("IMAGE_NAME", "")
-HF_SPACE_URL: str = os.environ.get("HF_SPACE_URL", "http://localhost:8000")
+API_BASE_URL: str = os.environ.get("API_BASE_URL", "https://api.openai.com/v1")  # has default
+MODEL_NAME: str = os.environ.get("MODEL_NAME", "gpt-4o-mini")                    # has default
+HF_TOKEN: str = os.environ.get("HF_TOKEN", "")                                   # NO default — must be provided
+IMAGE_NAME: str = os.environ.get("IMAGE_NAME", "")                               # optional
+HF_SPACE_URL: str = os.environ.get("HF_SPACE_URL", "https://sanketskg-mediaops-crm-env.hf.space")
 
 BENCHMARK = "mediaops-crm-env"
 MAX_STEPS = 25          # per task
@@ -161,9 +160,9 @@ async def run_task(
 
     log_start(task=task_name, env=BENCHMARK, model=MODEL_NAME)
 
-    # Connect to environment
+    # Connect to environment — from_docker_image uses HF_TOKEN for auth
     if IMAGE_NAME:
-        env = await MediaOpsCRMEnv.from_docker_image(IMAGE_NAME)
+        env = await MediaOpsCRMEnv.from_docker_image(IMAGE_NAME, token=HF_TOKEN)
     else:
         env = MediaOpsCRMEnv(base_url=env_url)
 
@@ -228,11 +227,12 @@ async def run_task(
 
 
 async def main() -> None:
-    if not API_KEY:
-        print("ERROR: Set OPENAI_API_KEY or HF_TOKEN", file=sys.stderr)
+    if not HF_TOKEN:
+        print("ERROR: HF_TOKEN environment variable must be set", file=sys.stderr)
         sys.exit(1)
 
-    client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
+    # All LLM calls use the OpenAI client configured via env variables
+    client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
     env_url = HF_SPACE_URL
 
     print(f"\n{'='*60}", flush=True)
