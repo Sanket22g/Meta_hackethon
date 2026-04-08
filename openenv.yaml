@@ -1,0 +1,33 @@
+spec_version: 1
+name: mediaops-crm-env
+type: space
+runtime: fastapi
+app: server.app:app
+port: 8000
+description: >
+  A simulated media-agency backend where an AI agent triages client emails,
+  manages a mock file system, runs video delivery pipelines, and handles
+  multi-client SLA crises. Three tasks of increasing difficulty (easy → hard).
+tasks:
+  - id: 1
+    name: email_triage
+    difficulty: easy
+    max_steps: 25
+    description: Classify and route 5 client emails to the correct queue.
+  - id: 2
+    name: video_delivery_pipeline
+    difficulty: medium
+    max_steps: 20
+    description: Execute a full video delivery pipeline (email → file → render → CRM).
+  - id: 3
+    name: sla_crisis_management
+    difficulty: hard
+    max_steps: 35
+    description: Handle 3 simultaneous client crises with storage pressure and SLA deadlines.
+tags:
+  - openenv
+  - media-ops
+  - crm
+  - email-triage
+  - rl-environment
+  - workflow-automation
