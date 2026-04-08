@@ -1,3 +1,18 @@
+---
+title: MediaOps CRM Env
+emoji: 🎬
+colorFrom: blue
+colorTo: purple
+sdk: docker
+pinned: false
+tags:
+  - openenv
+  - reinforcement-learning
+  - media-ops
+  - crm
+  - email-triage
+---
+
 # MediaOps-CRM-Env
 
 > **Meta × PyTorch × Hugging Face OpenEnv Hackathon Submission**
