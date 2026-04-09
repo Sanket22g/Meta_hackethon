@@ -341,7 +341,7 @@ async def run_task(
                 score = rewards[-1]          # terminal grader score
             else:
                 score = sum(r for r in rewards if r > 0) / (MAX_STEPS * 0.3)
-            score = min(max(score, 0.0), 1.0)
+            score = min(max(score, 0.01), 0.99)
 
         success = score >= SUCCESS_SCORE_THRESHOLD
 
