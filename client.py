@@ -5,7 +5,10 @@ from openenv.core import EnvClient
 from openenv.core.client_types import StepResult
 from openenv.core.env_server.types import State
 
-from .models import MediaOpsAction, MediaOpsObservation
+try:
+    from .models import MediaOpsAction, MediaOpsObservation
+except ImportError:
+    from models import MediaOpsAction, MediaOpsObservation  # type: ignore[no-redef]
 
 
 class MediaOpsCRMEnv(EnvClient[MediaOpsAction, MediaOpsObservation, State]):

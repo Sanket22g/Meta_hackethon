@@ -501,7 +501,7 @@ ACTION_HANDLERS = {
 def _grade_task1(s: Dict) -> float:
     emails = s["emails"]
     if not emails:
-        return 0.0
+        return 0.01
     correct = sum(
         1 for e in emails
         if e.get("triaged")
@@ -511,7 +511,7 @@ def _grade_task1(s: Dict) -> float:
     score = correct / len(emails) * 0.75
     if correct == len(emails) and s["step_count"] <= 15:
         score += max(0.0, (15 - s["step_count"]) / 15 * 0.25)
-    return min(1.0, score)
+    return min(0.99, max(0.01, score))
 
 
 def _grade_task2(s: Dict) -> float:
@@ -529,7 +529,7 @@ def _grade_task2(s: Dict) -> float:
     if email and email.get("replied"):
         score += 0.15
     score -= min(0.10, s["error_count"] * 0.02)
-    return min(1.0, max(0.0, score))
+    return min(0.99, max(0.01, score))
 
 
 def _grade_task3(s: Dict) -> float:
@@ -554,7 +554,7 @@ def _grade_task3(s: Dict) -> float:
     elif pct < 80:
         score += 0.05
     score -= min(0.15, s["error_count"] * 0.03)
-    return min(1.0, max(0.0, score))
+    return min(0.99, max(0.01, score))
 
 
 TASK_GRADERS = {1: _grade_task1, 2: _grade_task2, 3: _grade_task3}

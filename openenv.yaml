@@ -3,7 +3,7 @@ name: mediaops-crm-env
 type: space
 runtime: fastapi
 app: server.app:app
-port: 8000
+port: 7860
 description: >
   A simulated media-agency backend where an AI agent triages client emails,
   manages a mock file system, runs video delivery pipelines, and handles
